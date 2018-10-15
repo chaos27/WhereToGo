@@ -77,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private OkHttpClient okHttpClient;
     private Request request;
     public String url = "https://www.instagram.com/explore/tags/vancouver/";
+    public String url_string;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if (!response.isSuccessful()) {
                             throw new IOException("Unexpected code " + response);
                         } else {
-                            Log.i("ohhhh", response.body().string());
+                            url_string = response.body().string();
+                            Log.i("ohhhh", url_string);
                         }
                     }
                 });
