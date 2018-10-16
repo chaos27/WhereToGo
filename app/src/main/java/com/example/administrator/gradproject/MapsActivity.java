@@ -1,5 +1,9 @@
 package com.example.administrator.gradproject;
 //package okhttp3.guide;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -32,7 +36,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -118,7 +124,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             throw new IOException("Unexpected code " + response);
                         } else {
                             url_string = response.body().string();
-                            Log.i("ohhhh", url_string);
+                            Document doc = Jsoup.parse(url_string);
+                            String scriptIncludeJson = doc.select("body").select("script").get(0).childNodes().get(0).toString();
+                            int startIndex = scriptIncludeJson.indexOf("=");
+                            String jsonString = scriptIncludeJson.substring(startIndex + 1);
+                            jsonString = jsonString.substring(0, jsonString.length() - 1);
+
+                            JsonElement json = new JsonParser().parse(jsonString);
+                            String countString;
+                            JsonObject job;
+                            job = (JsonObject)((JsonObject)json).getAsJsonObject("entry_data").getAsJsonArray("TagPage").get(0);
+                            countString = job.getAsJsonObject("graphql").getAsJsonObject("hashtag").getAsJsonObject("edge_hashtag_to_media").getAsJsonPrimitive("count").getAsString();
+                            Integer count = Integer.parseInt(countString);
+//                            Log.i("ohhhh", url_string);
+                            Log.i("ohhhh", count.toString());
                         }
                     }
                 });
